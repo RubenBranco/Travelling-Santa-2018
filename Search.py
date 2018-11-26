@@ -25,10 +25,17 @@ class Search:
 
     def add_city(self, city):
         self._path.append(city)
+        city.visit()
         self._calculate_path_cost()
 
     def get_path(self):
         return self._path
+
+    def __setitem__(self, idx, value):
+        self._path[idx] = value
+
+    def __len__(self):
+        return len(self._path)
 
     def get_path_cost(self):
         return self._path_cost
