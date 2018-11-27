@@ -5,5 +5,5 @@ from GeneticStrategy import GeneticAlgorithm
 
 if __name__ == "__main__":
     graph = load_graph(os.path.join("data", "cities.csv"))
-    genetic = GeneticAlgorithm(graph, 100, 0.2, 0.01, 100, "chromossomes.pkl")
+    genetic = GeneticAlgorithm(graph, 100, 0.2, 0.01, 100000, "chromossomes.pkl")
     genetic.run()

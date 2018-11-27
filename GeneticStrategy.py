@@ -33,7 +33,7 @@ class GeneticAlgorithm:
         if not self._population:
             self.create_initial_population()
 
-        print("[RUN] Starting epochs now.")
+        print("[RUN] Starting generations now.")
 
         for i in range(self._epochs):
             self.breed_chromossomes()
@@ -42,7 +42,7 @@ class GeneticAlgorithm:
             sorted_chromossomes = self._sorted_chromossomes()
             best_chromossomes.append(sorted_chromossomes[0])
 
-            print(f" [RUN] Best route on epoch {i + 1} has a path cost of {sorted_chromossomes[0].get_path_cost()}")
+            print(f" [RUN] Best route on generation {i + 1} has a path cost of {sorted_chromossomes[0].get_path_cost()}")
             if self._save_fname is not None and (i % 10 == 0 or i == self._epochs - 1):
                 self.save_chromossome_population(self._save_fname)
             bar.update()
@@ -122,7 +122,7 @@ class GeneticAlgorithm:
             children.append(breeding_pool[i])
 
         random.shuffle(breeding_pool)
-        
+
         for i in range(0, length):
             child = self.crossover(pool[i], pool[len(breeding_pool) - i - 1])
             children.append(child)
