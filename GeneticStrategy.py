@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import random
 import pyprind
+import pickle
 
 from Search import Search
 
@@ -15,20 +16,22 @@ class Fitness:
 
 
 class GeneticAlgorithm:
-    def __init__(self, graph, population_size, elite_ratio, mutation_rate, epochs):
+    def __init__(self, graph, population_size, elite_ratio, mutation_rate, epochs, save_fname=None):
         self._graph = graph
         self._population_size = population_size
         self._population = []
         self._elite_ratio = elite_ratio
         self._mutation_rate = mutation_rate
         self._epochs = epochs
+        self._save_fname = save_fname
 
     def run(self):
         best_chromossomes = []
         bar = pyprind.ProgBar(self._epochs, bar_char='█')
 
         print("[RUN] Creating initial population..")
-        self.create_initial_population()
+        if not self._population:
+            self.create_initial_population()
 
         print("[RUN] Starting epochs now.")
 
@@ -39,7 +42,9 @@ class GeneticAlgorithm:
             sorted_chromossomes = self._sorted_chromossomes()
             best_chromossomes.append(sorted_chromossomes[0])
 
-            print(f"Best route on epoch {i + 1} has a path cost of {sorted_chromossomes[0].get_path_cost()}")
+            print(f" [RUN] Best route on epoch {i + 1} has a path cost of {sorted_chromossomes[0].get_path_cost()}")
+            if self._save_fname is not None and (i % 10 == 0 or i == self._epochs - 1):
+                self.save_chromossome_population(self._save_fname)
             bar.update()
 
         print(bar)
@@ -142,6 +147,14 @@ class GeneticAlgorithm:
     def mutate_chromossomes(self):
         for chromossome in self._population:
             self.mutate(chromossome)
+
+    def save_chromossome_population(self, fname):
+        with open(fname, "wb") as fw:
+            pickle.dump(self._population, fw)
+
+    def load_population_from_file(self, fname):
+        with open(fname, "rb") as fr:
+            self._population = pickle.load(fr)
 
     def save_path(self, path, fname):
         with open(fname, "w") as fw:
