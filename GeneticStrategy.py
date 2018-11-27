@@ -71,7 +71,7 @@ class GeneticAlgorithm:
         return sorted(self._population, key=lambda chromossome: 1 / chromossome.get_path_cost(), reverse=True)
 
     def select_breeding_pool(self):
-        breeding_pool = []
+        breeding_pool = set()
         sorted_chromossomes = self._sorted_chromossomes()
 
         df = pd.DataFrame(np.array([1 / chromossome.get_path_cost() for chromossome in sorted_chromossomes]), columns=["Fitness"])
@@ -79,16 +79,16 @@ class GeneticAlgorithm:
         df['cum_perc'] = 100 * df.cum_sum / df.Fitness.sum()
 
         for i in range(int(self._population_size * self._elite_ratio)):
-            breeding_pool.append(sorted_chromossomes[i])
+            breeding_pool.add(sorted_chromossomes[i])
 
-        for _ in range(0, self._population_size - int(self._population_size * self._elite_ratio)):
+        while len(breeding_pool) < self._population_size:
             random_threshold = 100 * random.random()
             for j in range(0, self._population_size):
                 if random_threshold <= df.iat[j, 2]:
-                    breeding_pool.append(sorted_chromossomes[j])
+                    breeding_pool.add(sorted_chromossomes[j])
                     break
 
-        return breeding_pool
+        return list(breeding_pool)
 
     def crossover(self, chromossome1, chromossome2):
         child = self._create_chromossome_single()
@@ -100,14 +100,10 @@ class GeneticAlgorithm:
         start_gene = min(1, gene_a, gene_b)
         end_gene = max(len(self._graph) - 2, gene_a, gene_b)
 
-        for i in range(start_gene, end_gene):
-            child_c1_path.append(chromossome1.get_path()[i])
-
-        child_c1_path.extend(chromossome2.get_path())
+        child_c1_path.extend(chromossome1.get_path()[start_gene : end_gene])
+        child_c1_path.extend(chromossome2.get_path()[1:-1])
 
         child_path = set(child_c1_path)
-
-        child.add_city(self._graph[0])
 
         for city in child_path:
             child.add_city(city)
@@ -125,6 +121,8 @@ class GeneticAlgorithm:
         for i in range(0, int(self._population_size * self._elite_ratio)):
             children.append(breeding_pool[i])
 
+        random.shuffle(breeding_pool)
+        
         for i in range(0, length):
             child = self.crossover(pool[i], pool[len(breeding_pool) - i - 1])
             children.append(child)
