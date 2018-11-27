@@ -14,7 +14,7 @@ class Search:
         self._path = []
         self._path_cost = 0
 
-    def _calculate_path_cost(self):
+    def _calculate_latest_path_cost(self):
         if len(self._path) > 1:
             coord1 = (self._path[-1].getX(), self._path[-1].getY())
             coord2 = (self._path[-2].getX(), self._path[-2].getY())
@@ -26,7 +26,7 @@ class Search:
     def add_city(self, city):
         self._path.append(city)
         city.visit()
-        self._calculate_path_cost()
+        self._calculate_latest_path_cost()
 
     def get_path(self):
         return self._path
@@ -36,6 +36,16 @@ class Search:
 
     def __len__(self):
         return len(self._path)
+
+    def calculate_path_cost(self):
+        self._path_cost = 0
+        for i, city in enumerate(self._path[1:], start=1):
+            coord1 = (city.getX(), city.getY())
+            coord2 = (self._path[i - 1].getX(), self._path[i - 1].getY())
+            path_cost = Graph.euclidean_distance(coord1, coord2)
+            if i % 10 == 0 and not is_prime(self._path[i - 1].get_city_id()):
+                path_cost += path_cost * 0.10
+            self._path_cost += path_cost
 
     def get_path_cost(self):
         return self._path_cost

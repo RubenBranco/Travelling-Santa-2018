@@ -45,11 +45,11 @@ class GeneticAlgorithm:
             print(f" [RUN] Best route on generation {i + 1} has a path cost of {sorted_chromossomes[0].get_path_cost()}")
             if self._save_fname is not None and (i % 10 == 0 or i == self._epochs - 1):
                 self.save_chromossome_population(self._save_fname)
+                self.save_path(self._sorted_chromossomes()[0].get_path(), "best_path.path")
             bar.update()
 
         print(bar)
 
-        self.save_path(self._sorted_chromossomes()[0].get_path(), "best_path.path")
 
     def _create_chromossome_single(self):
         chromossome = Search()
@@ -121,8 +121,6 @@ class GeneticAlgorithm:
         for i in range(0, int(self._population_size * self._elite_ratio)):
             children.append(breeding_pool[i])
 
-        random.shuffle(breeding_pool)
-
         for i in range(0, length):
             child = self.crossover(pool[i], pool[len(breeding_pool) - i - 1])
             children.append(child)
@@ -130,6 +128,7 @@ class GeneticAlgorithm:
         self._population = children
 
     def mutate(self, chromossome):
+        copy = chromossome.get_path().copy()
         for swapped in range(1, len(chromossome.get_path()) - 1):
             if random.random() < self._mutation_rate:
                 swapWith = int(random.random() * len(chromossome.get_path()))
@@ -140,11 +139,10 @@ class GeneticAlgorithm:
                 chromossome[swapped] = city_2
                 chromossome[swapWith] = city_1
 
-        return chromossome
-
     def mutate_chromossomes(self):
         for chromossome in self._population:
             self.mutate(chromossome)
+            chromossome.calculate_path_cost()
 
     def save_chromossome_population(self, fname):
         with open(fname, "wb") as fw:
@@ -156,5 +154,6 @@ class GeneticAlgorithm:
 
     def save_path(self, path, fname):
         with open(fname, "w") as fw:
+            fw.write("Path\n")
             for city in path:
                 fw.write(f"{city.get_city_id()}\n")
