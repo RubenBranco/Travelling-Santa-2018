@@ -2,6 +2,8 @@
 
 Kaggle Travelling Santa 2018 Competition
 
+Unfortunately, due to work and university, I was only able to try genetic algorithm and didn't have time to try other approaches.
+
 ## Description
 
 Rudolph the red-nosed reindeer

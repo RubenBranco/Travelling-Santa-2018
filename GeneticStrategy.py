@@ -128,7 +128,6 @@ class GeneticAlgorithm:
         self._population = children
 
     def mutate(self, chromossome):
-        copy = chromossome.get_path().copy()
         for swapped in range(1, len(chromossome.get_path()) - 1):
             if random.random() < self._mutation_rate:
                 swapWith = int(random.random() * len(chromossome.get_path()))
@@ -151,6 +150,9 @@ class GeneticAlgorithm:
     def load_population_from_file(self, fname):
         with open(fname, "rb") as fr:
             self._population = pickle.load(fr)
+
+    def set_chromossome_population(self, population):
+        self._population = population
 
     def save_path(self, path, fname):
         with open(fname, "w") as fw:

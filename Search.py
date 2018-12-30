@@ -47,5 +47,14 @@ class Search:
                 path_cost += path_cost * 0.10
             self._path_cost += path_cost
 
+    @staticmethod
+    def from_submission_file(graph, submission_file):
+        search = Search()
+        with open(submission_file) as fr:
+            path = list(map(lambda x: int(x), fr.readlines()[1:]))
+            for city_id in path:
+                search.add_city(graph[city_id])
+        return search
+        
     def get_path_cost(self):
         return self._path_cost
